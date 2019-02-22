@@ -2,7 +2,6 @@ package authweb
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -65,42 +64,35 @@ func CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 // UpdateUser update an existing user with the given new user information.
 func UpdateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	fmt.Println("The rest has been called!")
 	decoder := json.NewDecoder(r.Body)
-	var updateuser authrepo.UpdateUser
-	err := decoder.Decode(&updateuser)
+	var updateUserDto authrepo.UpdateUserDto
+	err := decoder.Decode(&updateUserDto)
 	w.Header().Set(ContentTypeKey, ContentType)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = authservice.Update(&updateuser)
+	err = authservice.Update(&updateUserDto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-	user := authrepo.User{}
-	encoder := json.NewEncoder(w)
-	err = encoder.Encode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 	}
 }
 
 // DeleteUser delete an existing user.
 func DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set(ContentTypeKey, ContentType)
-	w.Write([]byte("Delete user has been called!"))
+	w.Write([]byte("NotImplemented"))
 }
 
 // GetUserByEmail get an existing user with the given email.
 func GetUserByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set(ContentTypeKey, ContentType)
-	w.Write([]byte("Get user by email has been called!"))
+	w.Write([]byte("NotImplemented"))
 }
 
 // GetUserByPhoneNumber get user with the given phone number.
 func GetUserByPhoneNumber(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set(ContentTypeKey, ContentType)
-	w.Write([]byte("Get user by phone number has been called!"))
+	w.Write([]byte("NotImplemented"))
 }

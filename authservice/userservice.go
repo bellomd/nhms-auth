@@ -1,7 +1,6 @@
 package authservice
 
 import (
-	"fmt"
 	"time"
 
 	"nhms.com/auth/autherror"
@@ -33,37 +32,13 @@ func Create(user *authrepo.User) (err error) {
 }
 
 // Update update the given user.
-func Update(user *authrepo.UpdateUser) (err error) {
-	fmt.Println("The service has been called!")
+func Update(user *authrepo.UpdateUserDto) (err error) {
 	u, err := Get(user.ID)
 	if err != nil {
 		return
 	}
-	isDirty := false
-	if user.FirstName != "" {
-		u.FirstName = user.FirstName
-		isDirty = true
-	}
-	if user.LastName != "" {
-		u.LastName = user.LastName
-		isDirty = true
-	}
-	if user.Email != "" {
-		u.Email = user.Email
-		isDirty = true
-	}
-	if user.PhoneNumber != "" {
-		u.PhoneNumber = &user.PhoneNumber
-		isDirty = true
-	}
-	if user.Address != "" {
-		u.Address = &user.Address
-		isDirty = true
-	}
-	u.LastModifiedBy = &u.Email
-	u.LastModifiedDate = time.Now()
-	if isDirty {
-		u.Update()
+	if isDirty(user, u) {
+		err = u.Update()
 	}
 	return
 }
@@ -100,4 +75,33 @@ func GetByPhoneNumber(phoneNumber string) (u *authrepo.User, err error) {
 		return nil, autherror.New("User not found with the given phone number.")
 	}
 	return user, nil
+}
+
+func isDirty(user *authrepo.UpdateUserDto, u *authrepo.User) bool {
+
+	isDirty := false
+	if user.FirstName != "" {
+		u.FirstName = user.FirstName
+		isDirty = true
+	}
+	if user.LastName != "" {
+		u.LastName = user.LastName
+		isDirty = true
+	}
+	if user.Email != "" {
+		u.Email = user.Email
+		isDirty = true
+	}
+	if user.PhoneNumber != "" {
+		u.PhoneNumber = &user.PhoneNumber
+		isDirty = true
+	}
+	if user.Address != "" {
+		u.Address = &user.Address
+		isDirty = true
+	}
+	u.LastModifiedBy = &u.Email
+	u.LastModifiedDate = time.Now()
+
+	return isDirty
 }
