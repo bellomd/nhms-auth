@@ -62,6 +62,7 @@ func (user *User) Create() (u *User, err error) {
 	tx := Db.MustBegin()
 	rows, err := tx.NamedQuery(script, user)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 	if rows.Next() {
@@ -73,11 +74,9 @@ func (user *User) Create() (u *User, err error) {
 
 // GetUser get user with the given id.
 func GetUser(ID int) (u *User, err error) {
+	script := `SELECT * FROM t_user WHERE id=$1`
 	u = &User{}
-	err = Db.Get(u, "SELECT * FROM t_user WHERE id=$1", ID)
-	if err != nil {
-		return nil, err
-	}
+	err = Db.Get(u, script, ID)
 	return
 }
 
@@ -98,24 +97,39 @@ func (user *User) Update() (err error) {
 
 	tx := Db.MustBegin()
 	_, err = tx.NamedExec(script, user)
-	tx.Commit()
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
+	tx.Commit()
 	return
 }
 
 // DeleteUser delete user with the given id.
-func DeleteUser(user *User) (u *User, err error) {
+func DeleteUser(user *User) (err error) {
+	script := `DELETE FROM t_user WHERE id=:id`
+	tx := Db.MustBegin()
+	_, err = tx.NamedExec(script, user)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	tx.Commit()
 	return
 }
 
 // GetByEmail get user with the given email address.
 func GetByEmail(email string) (u *User, err error) {
+	script := `SELECT * FROM t_user WHERE email=$1`
+	u = &User{}
+	err = Db.Get(u, script, email)
 	return
 }
 
 // GetByPhoneNumber get user with the given phone number.
 func GetByPhoneNumber(phoneNumber string) (u *User, err error) {
+	scrip := `SELECT * FROM t_user WHERE phone_number=$1`
+	u = &User{}
+	err = Db.Get(u, scrip, phoneNumber)
 	return
 }

@@ -49,7 +49,7 @@ func Delete(ID int) (err error) {
 	if err != nil {
 		return
 	}
-	authrepo.DeleteUser(user)
+	err = authrepo.DeleteUser(user)
 	return
 }
 
@@ -58,11 +58,11 @@ func GetByEmail(email string) (u *authrepo.User, err error) {
 	if email == "" {
 		return nil, autherror.New("Email cannot be empty.")
 	}
-	user, err := authrepo.GetByEmail(email)
+	u, err = authrepo.GetByEmail(email)
 	if err != nil {
 		return nil, autherror.New("User not found with the given email address.")
 	}
-	return user, nil
+	return
 }
 
 // GetByPhoneNumber get user with the given phone number.
@@ -70,11 +70,11 @@ func GetByPhoneNumber(phoneNumber string) (u *authrepo.User, err error) {
 	if phoneNumber == "" {
 		return nil, autherror.New("Phone number cannot be empty.")
 	}
-	user, err := authrepo.GetByPhoneNumber(phoneNumber)
+	u, err = authrepo.GetByPhoneNumber(phoneNumber)
 	if err != nil {
 		return nil, autherror.New("User not found with the given phone number.")
 	}
-	return user, nil
+	return
 }
 
 func isDirty(user *authrepo.UpdateUserDto, u *authrepo.User) bool {

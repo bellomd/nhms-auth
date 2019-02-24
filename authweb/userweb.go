@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"nhms.com/auth/authrepo"
@@ -34,7 +35,7 @@ func GetUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	}
 
 	encoder := json.NewEncoder(w)
-	err = encoder.Encode(&user)
+	err = encoder.Encode(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 	}
@@ -75,24 +76,58 @@ func UpdateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	err = authservice.Update(&updateUserDto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
 }
 
 // DeleteUser delete an existing user.
 func DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set(ContentTypeKey, ContentType)
-	w.Write([]byte("NotImplemented"))
+	id, err := strconv.Atoi(p.ByName("id"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = authservice.Delete(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // GetUserByEmail get an existing user with the given email.
 func GetUserByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	email := strings.TrimSpace(p.ByName("email"))
 	w.Header().Set(ContentTypeKey, ContentType)
-	w.Write([]byte("NotImplemented"))
+	if email == "" {
+		http.Error(w, "email cannot be empty or nil", http.StatusBadRequest)
+	}
+	user, err := authservice.GetByEmail(email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+	}
 }
 
 // GetUserByPhoneNumber get user with the given phone number.
 func GetUserByPhoneNumber(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	phonenumber := strings.TrimSpace(p.ByName("phonenumber"))
 	w.Header().Set(ContentTypeKey, ContentType)
-	w.Write([]byte("NotImplemented"))
+	if phonenumber == "" {
+		http.Error(w, "Phonenumber cannot be empty or nil", http.StatusBadRequest)
+		return
+	}
+	user, err := authservice.GetByPhoneNumber(phonenumber)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+	}
 }

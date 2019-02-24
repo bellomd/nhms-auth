@@ -25,11 +25,14 @@ func main() {
 
 	//files := http.FileServer(http.Dir(PublicDir))
 	//router.Handle(StaticPrefix, http.StripPrefix(StaticPrefix, files))
-	router.POST("/auth/public/v1/authenticate", authenticate)
-	router.POST("/auth/public/v1/sessions", getSession)
-	router.GET("/auth/secure/v1/users/:id", authweb.GetUser)
-	router.POST("/auth/secure/v1/users", authweb.CreateUser)
-	router.PUT("/auth/secure/v1/users", authweb.UpdateUser)
+	router.POST("/auth/public/api/v1/authenticate", authenticate)
+	router.POST("/auth/public/api/v1/sessions", getSession)
+	router.POST("/auth/secure/api/v1/users", authweb.CreateUser)
+	router.PUT("/auth/secure/api/v1/users", authweb.UpdateUser)
+	router.GET("/auth/secure/api/v1/users/byid/:id", authweb.GetUser)
+	router.DELETE("/auth/secure/api/v1/users/:id", authweb.DeleteUser)
+	router.GET("/auth/secure/api/v1/users/byemail/:email", authweb.GetUserByEmail)
+	router.GET("/auth/secure/api/v1/users/bynumber/:phonenumber", authweb.GetUserByPhoneNumber)
 
 	log.Fatal(http.ListenAndServe(DefaultAddress, router))
 }
