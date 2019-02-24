@@ -1,1 +1,3 @@
 # nhms-auth
+nhms-auth is a user login/user authentication application that is minimal and serve as microservice that will enable login
+to a system and generate token for the client.
